@@ -1,0 +1,36 @@
+version: '3.0'
+
+services:
+  main:
+    container_name: main
+    build:
+      context: .
+    env_file:
+      - .development.env
+    volumes:
+      - .:/app
+      # - /app/node_modules
+    ports:
+      - 5001:5000
+      - 9229:9229
+    command: yarn start:dev
+    depends_on:
+      - mongodb
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: 'nest_mongo'
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    volumes:
+      - dbdata:/data/db
+
+volumes:
+  dbdata:
